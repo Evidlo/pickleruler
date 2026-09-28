@@ -1,0 +1,21 @@
+[project]
+name = "pickleruler"
+dynamic = ["version"]
+description = "Screen ruler, protractor, and area tool"
+requires-python = ">=3.9"
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE"]
+dependencies = ["pillow"]
+
+[project.scripts]
+pickleruler = "pickleruler:main"
+
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = ["pickleruler"]
+
+[tool.setuptools.dynamic]
+version = { attr = "pickleruler.VERSION" }
