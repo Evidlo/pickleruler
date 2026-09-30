@@ -2,6 +2,18 @@
 
 Newest first.
 
+## 2026-09-28 — every drawn point snaps (0.0.8, both versions)
+- Hover dot now also shows while a shape is in progress, and every point snaps to it (line end, path/area
+  vertices, angle arms, circle edge); preview follows. Hover snap wins over Shift 45°.
+- py `find_hover(x, y)` takes the canvas point (release events don't update `self.mouse`); `cursor_point`
+  shared by preview and clicks. Tests: snap check now covers both points of a line.
+
+## 2026-09-28 — start new shapes on the hover snap point (0.0.7, both versions)
+- If the white hover dot (`find_hover` foot) is showing when a shape's first point is placed, the point
+  goes on the dot instead of the cursor (py `event_point`, JS `cursorPoint`). Applies to every drawing
+  tool, including digitizer points.
+- Tests: one check in each suite.
+
 ## 2026-09-28 — repo layout for commit / GitHub Pages
 - Web app is to be served as `index.html` (user renaming `pickleruler.html` → `index.html` for gh-pages);
   all scripts and docs now reference `index.html`.

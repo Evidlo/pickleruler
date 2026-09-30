@@ -103,7 +103,7 @@
 <script>
 'use strict';
 
-const VERSION = '0.0.6';
+const VERSION = '0.0.8';
 const NEED = { line: 2, axis: 2, angle: 3, circle: 2, pt: 1, poly: 0, path: 0 };
 const TOOLS = [
   ['pan', 'v', 'Pan'], ['line', 'l', 'Line'], ['angle', 'p', 'Protractor'], ['poly', 'a', 'Area'],
@@ -265,7 +265,7 @@ const S = {
 const c = p => [p[0] * V.z + V.tx, p[1] * V.z + V.ty];
 const im = (x, y) => [(x - V.tx) / V.z, (y - V.ty) / V.z];
 const snapped = (p, anchor) => (S.shift && anchor ? snap45(anchor, p) : p);
-const cursorPoint = () => snapped(im(...S.mouse), S.cur ? S.cur.pts.at(-1) : null);
+const cursorPoint = () => findHover()?.foot ?? snapped(im(...S.mouse), S.cur ? S.cur.pts.at(-1) : null);
 
 // ---------------------------------------------------------------- measures
 // [units per px, unit] for the whole image, or null
@@ -441,7 +441,7 @@ function hoverInfo(s, p) {
 }
 
 function findHover() {
-  if (S.cur || S.calflow || !S.mouseIn) return null;
+  if (S.calflow || !S.mouseIn) return null;
   const p = im(...S.mouse);
   const cands = S.shapes.filter(s => CAL_KINDS.includes(s.kind)).map(s => hoverInfo(s, p)).filter(Boolean);
   return cands.length ? cands.reduce((a, b) => (b.d < a.d ? b : a)) : null;

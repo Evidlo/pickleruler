@@ -23,7 +23,7 @@ import tkinter.font as tkfont
 
 from PIL import Image, ImageGrab, ImageTk
 
-VERSION = '0.0.6'
+VERSION = '0.0.8'
 NEED = {'line': 2, 'axis': 2, 'angle': 3, 'circle': 2, 'pt': 1, 'poly': 0, 'path': 0}
 TOOLS = [
     ('pan', 'v', 'Pan'),
@@ -372,8 +372,12 @@ class Ruler:
     def snapped(self, p, anchor):
         return snap45(anchor, p) if (self.shift and anchor is not None) else p
 
+    def cursor_point(self, x, y):
+        h = self.find_hover(x, y)
+        return h['foot'] if h else self.snapped(self.i(x, y), self.cur['pts'][-1] if self.cur else None)
+
     def event_point(self, e):
-        return self.snapped(self.i(e.x, e.y), self.cur['pts'][-1] if self.cur else None)
+        return self.cursor_point(e.x, e.y)
 
     # ------------------------------------------------------------- measures
     def scale(self):
@@ -552,10 +556,10 @@ class Ruler:
         text = f'{fmt(val)} {self.unit()}' if cal else self.fmt_len(along)
         return dict(d=d * self.z, shape=s, foot=foot, text=text, copy=fmt(val))
 
-    def find_hover(self):
-        if self.cur or self.calflow:
+    def find_hover(self, x, y):
+        if self.calflow:
             return None
-        p = self.i(*self.mouse)
+        p = self.i(x, y)
         cands = [h for s in self.shapes if s['kind'] in CAL_KINDS for h in [self.hover_info(s, p)] if h]
         return min(cands, key=lambda h: h['d']) if cands else None
 
@@ -671,14 +675,13 @@ class Ruler:
             cv.create_line(mx, 0, mx, H, fill=COL['cross'], dash=(3, 5), tags='cur')
         self.preview = None
         if self.cur:
-            p = self.snapped(self.i(mx, my), self.cur['pts'][-1])
-            self.preview = dict(self.cur, pts=self.cur['pts'] + [p])
+            self.preview = dict(self.cur, pts=self.cur['pts'] + [self.cursor_point(mx, my)])
             self.draw_shape(self.preview, 'cur', COL['preview'])
         if self.calflow:
             x, y = self.c(self.cal_anchor())
             for w, col in ((4, 'black'), (2, COL['sel'])):
                 cv.create_oval(x - 9, y - 9, x + 9, y + 9, outline=col, width=w, tags='cur')
-        self.hover = self.find_hover()
+        self.hover = self.find_hover(mx, my)
         if self.hover:
             h = self.hover
             fx, fy = self.c(h['foot'])
